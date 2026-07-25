@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gary's Everest Base Camp Adventure</title>
+
+<link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)" />
+<link rel="preconnect" href="[fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin />
+<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap)" rel="stylesheet" />
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Poppins,sans-serif;
+  scroll-behavior:smooth;
+}
+
+/* Root variables for quick theme edits */
+:root{
+  --bg-dark:#06111d;
+  --bg-glass:rgba(255,255,255,.08);
+  --text:#ffffff;
+  --brand:#1d9bf0;
+  --brand-2:#36b2ff;
+  --accent:#4fc3ff;
+  --nav:rgba(7,20,36,.95);
+  --shadow:0 15px 40px rgba(0,0,0,.4);
+}
+
+/* Site-wide fixed, scrollable background */
+
+body{
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+  background:#111;
+}
+
+
+
+/* Loading Screen */
+#loader{
+  position:fixed;
+  inset:0;
+  background:var(--bg-dark);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:99999;
+}
+.loader-circle{
+  width:120px; height:120px;
+  border-radius:50%;
+  border:8px solid rgba(255,255,255,.1);
+  border-top:8px solid white;
+  animation:spin 1.2s linear infinite;
+}
+@keyframes spin{ 100%{ transform:rotate(360deg); } }
+#loader h2{
+  margin-top:30px;
+  font-weight:400;
+  letter-spacing:3px;
+}
+
+/* Hero */
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  padding:0 10%;
+
+  background:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.65)),
+    url("Mount.jpg") center center / cover no-repeat;
+
+  background-attachment:fixed;
+}
+
+.hero h1{
+  font-size: clamp(36px, 7vw, 80px);
+  font-weight:700;
+  text-shadow:0 10px 30px black;
+}
+.hero p{
+  font-size: clamp(16px, 2.5vw, 24px);
+  margin-top:20px;
+  opacity:.9;
+}
+.enter{
+  margin-top:45px;
+  display:inline-block;
+  padding:18px 45px;
+  border-radius:50px;
+  background:var(--brand);
+  text-decoration:none;
+  color:white;
+  font-weight:bold;
+  transition:.3s transform;
+}
+.enter:hover{
+  transform:translateY(-5px);
+  background:var(--brand-2);
+}
+
+/* Scroll Icon */
+.scroll{
+  position:absolute;
+  bottom:40px; left:50%;
+  transform:translateX(-50%);
+  font-size:40px;
+  animation:bounce 2s infinite;
+}
+@keyframes bounce{ 50%{ transform:translate(-50%,15px); } }
+
+/* Navbar */
+nav{
+  position:sticky; top:0;
+  background:var(--nav);
+  backdrop-filter:blur(18px);
+  display:flex; justify-content:center; flex-wrap:wrap; gap:2px;
+  z-index:999;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
+}
+nav button{
+  background:none; border:none; color:white;
+  padding:14px 18px; font-size:15px; cursor:pointer; transition:.25s;
+}
+nav button:hover, nav button[aria-current="page"]{
+  background:var(--brand);
+}
+nav .tabs{
+  width:100%;
+  display:flex; flex-wrap:wrap; justify-content:center;
+  padding:6px;
+}
+
+/* Main sections */
+main{
+  position:relative;
+}
+section{
+  padding:90px 10%;
+  display:none;
+  animation:fade .7s;
+}
+.active{ display:block; }
+@keyframes fade{
+  from{ opacity:0; transform:translateY(30px); }
+  to{ opacity:1; transform:none; }
+}
+
+/* Card grid */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:30px;
+  margin-top:30px;
+}
+.card{
+  background:var(--bg-glass);
+  backdrop-filter:blur(15px);
+  padding:30px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  transition:.3s transform;
+}
+.card:hover{ transform:translateY(-8px); }
+.card h2{
+  font-size:40px;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+
+/* Timeline */
+.timeline{
+  margin-top:40px; position:relative; padding-left:60px;
+}
+.timeline:before{
+  content:""; position:absolute; left:20px; top:0; bottom:0; width:4px; background:var(--brand);
+}
+.stop{ margin-bottom:34px; position:relative; }
+.stop:before{
+  content:""; position:absolute; left:-48px; top:6px;
+  width:18px; height:18px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 15px var(--accent);
+}
+.stop h3{ font-size:24px; }
+.stop p{ margin-top:8px; opacity:.85; }
+
+/* Simple gallery for each tab */
+.gallery{
+  margin-top:28px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:18px;
+}
+
+figure{
+  margin:0;
+  display:inline-block;
+  background:none;
+  border-radius:14px;
+  overflow:visible;
+  box-shadow:none;
+}
+
+figure img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  transition:transform .35s;
+}
+
+figure:hover img{
+  transform:scale(1.04);
+}
+
+figcaption{
+  padding:8px 4px 0;
+  font-size:14px;
+  text-align:center;
+  background:none;
+  color:#fff;
+  opacity:1;
+}
+
+/* Day page backgrounds */
+.day-page{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+.day-page::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:var(--bg);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  opacity:0.25;
+  z-index:-2;
+}
+
+.day-page::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:-1;
+}
+
+/* Footer */
+footer{
+  padding:80px 10%;
+  text-align:center;
+  opacity:.8;
+}
+
+/* Back to top button (optional) */
+#toTop{
+  position:fixed; right:16px; bottom:16px;
+  background:var(--brand); color:#fff; border:none; border-radius:24px;
+  padding:10px 14px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.35);
+  display:none;
+}
+#toTop.show{ display:block; }
+
+@media (prefers-reduced-motion: reduce){
+  .enter, .card, figure img{ transition:none; }
+  .scroll, .loader-circle{ animation:none; }
+}
+</style>
+</head>
+
+<body>
+<!-- Loader -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-circle" aria-hidden="true"></div>
+  <h2>Loading Expedition...</h2>
+</div>
+
+<!-- Hero -->
+<header class="hero">
+  <div>
+    <h1>🏔 Gary's Everest Base Camp Adventure</h1>
+    <p>A journey through Nepal to the foot of the world's highest mountain</p>
+    <a href="#main" class="enter">Begin the Journey</a>
+  </div>
+  <div class="scroll" aria-hidden="true">↓</div>
+</header>
+
+<!-- Nav -->
+<nav aria-label="Primary">
+  <div class="tabs">
+    <button onclick="showPage('overview')" aria-current="page">Overview</button>
+    <button onclick="showPage('journey')">Journey</button>
+
+    <!-- Day tabs (you can keep or trim as you like) -->
+    <button onclick="showPage('day1')">Day 1</button>
+    <button onclick="showPage('day2')">Day 2</button>
+    <button onclick="showPage('day3')">Day 3</button>
+    <button onclick="showPage('day4')">Day 4</button>
+    <button onclick="showPage('day5')">Day 5</button>
+    <button onclick="showPage('day6')">Day 6</button>
+    <button onclick="showPage('day7')">Day 7</button>
+    <button onclick="showPage('day8')">Day 8</button>
+    <button onclick="showPage('day9')">Day 9</button>
+    <button onclick="showPage('day10')">Day 10</button>
+    <button onclick="showPage('day11')">Day 11</button>
+    <button onclick="showPage('day12')">Day 12</button>
+    <button onclick="showPage('day13')">Day 13</button>
+    <button onclick="showPage('day14')">Day 14</button>
+    <button onclick="showPage('day15')">Day 15</button>
+    <button onclick="showPage('Memories')">Memories</button>
+  </div>
+</nav>
+
+<main id="main">
+  <!-- Overview -->
+  <section id="overview" class="active">
+    <h1>Welcome to the Adventure</h1>
+    <br />
+    <p>
+      From the thrilling flight into Lukla to standing proudly at Everest Base Camp,
+      this website tells the story of Gary's unforgettable Himalayan adventure
+      through photographs, memories and breathtaking landscapes.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <h2>5364m</h2>
+        Everest Base Camp
+      </div>
+      <div class="card">
+        <h2>5545m</h2>
+        Kala Patthar
+      </div>
+      <div class="card">
+        <h2>≈130km</h2>
+        Distance Walked
+      </div>
+      <div class="card">
+        <h2>14</h2>
+        Days Trekking
+      </div>
+    </div>
+
+    <!-- Optional overview gallery -->
+    <div class="gallery" aria-label="Overview gallery">
+      <figure>
+        <img src="Him.jpg" alt="Himalayan range panorama at dawn" />
+        <figcaption>Mount Everest.</figcaption>
+      </figure>
+      <figure>
+        <img src="Bridge.jpg" alt="The Famous Hillary Suspension Bridge" />
+        <figcaption>The Famous Hillary Suspension Bridge.</figcaption>
+      </figure>
+      <figure>
+        <img src="Pasang.jpg" alt="Monastery with mountains in the background" />
+        <figcaption>Pasang Lhamu Gate</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Journey -->
+  <section id="journey" class="day-page" style="--bg:url('EverestB.jpg');">
+
+    <h1>The Journey</h1>
+    <div class="timeline">
+      <div class="stop">
+        <h3>✈ Lukla</h3>
+        <p>The adventure begins with one of the world's most famous mountain airports.</p>
+        <p>2860m</p>
+      </div>
+      <div class="stop">
+        <h3>🥾 Phakding</h3>
+        <p>The first day's trek through forests and suspension bridges.</p>
+        <p>2610m</p>
+      </div>
+      <div class="stop">
+        <h3>🏘 Namche Bazaar</h3>
+        <p>The Sherpa capital and gateway to Everest.</p>
+        <p>3440m</p>
+      </div>
+      <div class="stop">
+        <h3>⛩ Tengboche</h3>
+        <p>Home to the famous monastery with incredible mountain views.</p>
+	<p>3867m</p>
+      </div>
+      <div class="stop">
+        <h3>🏔 Dingboche</h3>
+        <p>Higher altitude and stunning Himalayan scenery.</p>
+	<p>4410m</p>
+      </div>
+      <div class="stop">
+        <h3>🧊 Labouche</h3>
+        <p>The landscape becomes rocky and glacial.</p>
+	<p>4910m</p>
+	
+      </div>
+      <div class="stop">
+        <h3>🏕 Gorak Shep</h3>
+        <p>The final stop before reaching Base Camp.</p>
+	<p>5164m</p>
+      </div>
+      <div class="stop">
+        <h3>🏆 Everest Base Camp</h3>
+        <p>Mission accomplished.</p>
+	<p>5364m</p>
+      </div>
+      <div class="stop">
+        <h3>⛰ Kala Patthar</h3>
+        <p>The highest point of the trek with unforgettable views of Everest.</p>
+	<p>5545m</p>
+      </div>
+    </div>
+
+    <!-- Journey gallery -->
+    <div class="gallery" aria-label="Journey gallery">
+      <figure>
+        <img src="Walk1.jpg" alt="Trail winding through pine forest near Phakding" />
+        <figcaption></figcaption>
+      </figure>
+      <figure>
+        <img src="bench.jpg" alt="Namche Bazaar amphitheater-style town" />
+        <figcaption></figcaption>
+      </figure>
+      <figure>
+        <img src="Camp.jpg" alt="Prayer flags with snow-capped peaks behind" />
+        <figcaption></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Day sections with image slots -->
+<section id="day1" class="day-page" style="--bg:url('EverestB.jpg');">
+  <h1>Day 1</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="Westbury.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>Meeting up With Everyone.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="821.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>Heading off.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="Gary.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+ 
+<section id="day2" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 2</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="start.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>Meeting up With Everyone.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="1234.png" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>Heading off.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="123456.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day3" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 3</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="bag.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="bag2.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="bag3.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day4" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 4</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="1.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="2.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="3.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day5" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 5</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="the.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption</figcaption>
+    </figure>
+
+     <figure>
+      <img src="mt.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="Brace.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day6" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 6</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="Bridge1.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="Home.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="mon.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day7" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 7</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="dog.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="yak.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="gg.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day8" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 8</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="stand.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="yellow.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="yes.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day9" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 9</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="nice.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="game.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="mem.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day10" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 10</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="next.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="final.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="85.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day11" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 11</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="11.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+     <figure>
+      <img src="12.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="13.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day12" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 12</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="14.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="15.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="16.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day13" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 13</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="17.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="18.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="19.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day14" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 14</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="20.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="21.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="22.png" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="day15" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Day 15</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="23.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+     <figure>
+      <img src="24.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="25.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section id="Memories" class="day-page" style="--bg:url('EverestB.jpg');">
+
+  <h1>Best Memories whilst Training</h1>
+  <p>.</p>
+
+  <div class="gallery">
+    <figure>
+      <img src="some.jpg" alt="Aircraft approaching Lukla runway" style="width:550px; height:auto;">
+      <figcaption>General Training With The Team</figcaption>
+    </figure>
+
+     <figure>
+      <img src="snowdown.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>Snowdon On Your Own</figcaption>
+    </figure>
+
+    <figure>
+      <img src="team.jpg" alt="Tea house exterior with colorful prayer flags" style="width:600px; height:auto;">
+      <figcaption>Snowdon With The Team</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+
+</main>
+
+<footer>
+  Gary's Everest Base Camp Adventure • Built to celebrate an unforgettable journey.
+</footer>
+
+<button id="toTop" aria-label="Back to top">↑ Top</button>
+
+<script>
+/* Loader hide */
+setTimeout(function(){
+  var loader = document.getElementById("loader");
+  if(loader) loader.style.display="none";
+},1800);
+
+/* Tab switching */
+function showPage(id){
+  document.querySelectorAll("section").forEach(function(page){
+    page.classList.remove("active");
+  });
+  var target = document.getElementById(id);
+  if(target){
+    target.classList.add("active");
+  }
+
+  // Update nav current state
+  document.querySelectorAll("nav button").forEach(function(btn){
+    btn.removeAttribute("aria-current");
+  });
+  // Find the button whose onclick includes the id (simple heuristic)
+  var match = Array.from(document.querySelectorAll("nav button"))
+    .find(b => (b.getAttribute("onclick")||"").includes("'"+id+"'"));
+  if(match) match.setAttribute("aria-current","page");
+
+  // Scroll to below the nav
+  var nav = document.querySelector("nav");
+  var top = nav ? nav.offsetTop : 0;
+  window.scrollTo({ top: top, behavior:"smooth" });
+}
+
+/* Back to top visibility */
+var toTop = document.getElementById("toTop");
+window.addEventListener("scroll", function(){
+  if(window.scrollY > 400){
+    toTop.classList.add("show");
+  } else {
+    toTop.classList.remove("show");
+  }
+});
+toTop.addEventListener("click", function(){
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+</script>
+</body>
+</html>
